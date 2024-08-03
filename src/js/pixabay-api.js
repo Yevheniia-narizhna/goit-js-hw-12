@@ -3,6 +3,8 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 export { getImages };
 
+const perPage = 15;
+
 async function getImages(name, page) {
   const API_KEY = '45112034-271f1d190327e1d75e8ffdf0b';
 

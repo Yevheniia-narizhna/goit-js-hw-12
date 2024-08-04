@@ -1,38 +1,37 @@
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
-
-export const galleryEl = document.querySelector('.gallery');
-export function createMarkUp(images) {
-  const markUp = images
+export function createMarkUp(arr) {
+  return arr
     .map(
-      image => `<li class="gallery-item">
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => `<li class="gallery-item">
   <a class="gallery-li"
-    href="${image.largeImageURL}"
+    href="${largeImageURL}"
     ><img
-      src="${image.webformatURL}"
-      alt="${image.tags}"
+      src="${webformatURL}"
+      alt="${tags}"
   />
   <ul class="img-discr">
     <li>
-      <p><b>Likes</b> ${image.likes}</p>
+      <p><b>Likes</b> ${likes}</p>
     </li>
     <li>
-      <p><b>Views</b> ${image.views}</p>
+      <p><b>Views</b> ${views}</p>
     </li>
     <li>
-      <p><b>Comments</b> ${image.comments}</p>
+      <p><b>Comments</b> ${comments}</p>
     </li>
     <li>
-      <p><b>Downloads</b> ${image.downloads}</p>
+      <p><b>Downloads</b> ${downloads}</p>
     </li>
   </ul>
   </a>
 </li>`
     )
     .join('');
-  galleryEl.insertAdjacentHTML('beforeend', markUp);
-  new SimpleLightbox('.gallery-li', {
-    captionsData: 'alt',
-    captionDelay: 250,
-  });
 }

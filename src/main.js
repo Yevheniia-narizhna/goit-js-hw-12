@@ -2,39 +2,42 @@ import './js/pixabay-api';
 import { getImages } from './js/pixabay-api';
 import './js/render-functions';
 import { createMarkUp } from './js/render-functions';
-import { galleryEl } from './js/render-functions';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
+const galleryEl = document.querySelector('.gallery');
 const formEl = document.querySelector('.form');
 const loaderEl = document.querySelector('.loader');
-const inputEl = document.querySelector('input');
 const btnLoader = document.querySelector('btn-load');
 const loaderMore = document.querySelector('loader-more');
 const currentPage = 1;
 const perPage = 15;
 let lightboxPict;
+let inputEl = '';
 loaderEl.style.display = 'none';
 btnLoader.style.display = 'none';
 loaderMore.style.display = 'none';
+
+formEl.addEventListener('submit', onSearch);
 btnLoader.addEventListener('click', onLoad);
 
-formEl.addEventListener('submit', event => {
+function onSearch(event) {
   event.preventDefault();
 
   currentPage = 1;
   galleryEl.innerHTML = '';
   loaderEl.style.display = 'block';
   btnLoader.style.display = 'none';
-  const inputValue = inputEl.value.trim();
-  if (inputValue === '') {
+
+  inputEl = event.target.elements.search.value.trim();
+  if (inputEl === '') {
     loaderEl.style.display = 'none';
     return;
   }
-  getImages(inputValue, currentPage)
-    .then(response => {
+  getImages(inputEl, currentPage)
+    .then(({ data }) => {
       loaderEl.style.display = 'none';
       const totalPages = Math.ceil(data.totalHits / perPage);
 
@@ -52,7 +55,7 @@ formEl.addEventListener('submit', event => {
         });
         return;
       }
-      createMarkUp(response.hits);
+      galleryEl.insertAdjacentHTML('beforeend', createMarkUp(data.hits));
 
       lightboxPict = new SimpleLightbox('.gallery-li', {
         captionsData: 'alt',
@@ -64,7 +67,7 @@ formEl.addEventListener('submit', event => {
       loaderEl.style.display = 'none';
       console.log(err);
     });
-});
+}
 
 function onLoad() {
   currentPage += 1;
@@ -75,8 +78,9 @@ function onLoad() {
   const heighCard = () =>
     document.querySelector('.gallery-item').getBoundingClientRect();
 
-  getImages(inputValue, currentPage)
-    .then(response => {
+  getImages(inputEl, currentPage)
+    .then(({ data }) => {
+      galleryEl.insertAdjacentHTML('beforeend', createMarkUp(data.hits));
       window.scrollBy({
         top: heighCard().height * 2,
         left: 0,
@@ -95,7 +99,6 @@ function onLoad() {
         loaderMore.style.display = 'none';
         return;
       }
-      createMarkUp(response.hits);
 
       loaderMore.style.display = 'none';
       btnLoader.style.display = 'block';

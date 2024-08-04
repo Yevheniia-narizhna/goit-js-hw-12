@@ -10,12 +10,13 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 const galleryEl = document.querySelector('.gallery');
 const formEl = document.querySelector('.form');
 const loaderEl = document.querySelector('.loader');
-const btnLoader = document.querySelector('btn-load');
-const loaderMore = document.querySelector('loader-more');
-const currentPage = 1;
+const btnLoader = document.querySelector('.btn-load');
+const loaderMore = document.querySelector('.loader-more');
+const inputEl = document.querySelector('input');
+let currentPage = 1;
 const perPage = 15;
 let lightboxPict;
-let inputEl = '';
+
 loaderEl.style.display = 'none';
 btnLoader.style.display = 'none';
 loaderMore.style.display = 'none';
@@ -31,12 +32,12 @@ function onSearch(event) {
   loaderEl.style.display = 'block';
   btnLoader.style.display = 'none';
 
-  inputEl = event.target.elements.search.value.trim();
-  if (inputEl === '') {
+  const inputValue = inputEl.value.trim();
+  if (inputValue === '') {
     loaderEl.style.display = 'none';
     return;
   }
-  getImages(inputEl, currentPage)
+  getImages(inputValue, currentPage)
     .then(({ data }) => {
       loaderEl.style.display = 'none';
       const totalPages = Math.ceil(data.totalHits / perPage);
@@ -46,7 +47,7 @@ function onSearch(event) {
       } else {
         btnLoader.style.display = 'block';
       }
-      if (response.hits.length === 0) {
+      if (data.hits.length === 0) {
         iziToast.info({
           title: 'Error',
           message:
@@ -61,7 +62,6 @@ function onSearch(event) {
         captionsData: 'alt',
         captionDelay: 250,
       }).refresh();
-      formEl.reset();
     })
     .catch(err => {
       loaderEl.style.display = 'none';
@@ -74,11 +74,12 @@ function onLoad() {
 
   loaderMore.style.display = 'block';
   btnLoader.style.display = 'none';
+  const inputValue = inputEl.value.trim();
 
   const heighCard = () =>
     document.querySelector('.gallery-item').getBoundingClientRect();
 
-  getImages(inputEl, currentPage)
+  getImages(inputValue, currentPage)
     .then(({ data }) => {
       galleryEl.insertAdjacentHTML('beforeend', createMarkUp(data.hits));
       window.scrollBy({
